@@ -3,15 +3,32 @@ from models.order_itens import OrderItem
 from models.products import Products
 from models.orders import Order
 from flask_jwt_extended import jwt_required, get_jwt_identity
-import datetime
+from datetime import datetime
 
 
 class AllOrderItem(Resource):
+
     @jwt_required()
     def get(self):
         user_id = get_jwt_identity()
         return {"orders": Order.json_orders_user(user_id)}
 
+class AllOrderItemDate(Resource):
+    argumentos = reqparse.RequestParser()
+    argumentos.add_argument('start_date', type=str, required=True, help="start_date cannot be blank.")
+    argumentos.add_argument('end_date', type=str, required=True, help="end_date cannot be blank.")
+
+
+    @jwt_required()
+    def get(self,  start_date, end_date):
+        try:
+            user_id = get_jwt_identity()
+            start_date_obj = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date_obj = datetime.strptime(end_date, '%Y-%m-%d').date()
+
+            return {"orders": Order.json_orders_user(user_id, start_date_obj, end_date_obj)}
+        except:
+            return {'message': 'format date invalid.'}, 500
 
 class OrderItemResource(Resource):
     """
@@ -44,7 +61,7 @@ class OrderItemResource(Resource):
         if order_item:
             return order_item.json(), 200
 
-        return {'message': 'order_item not found!'}, 404
+        return {'message': 'An internal error ocurred trying to save order_item.'}, 500
 
     @jwt_required()
     def post(self, order_item_id):

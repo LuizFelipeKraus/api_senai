@@ -84,9 +84,12 @@ class Order(db.Model):
         db.session.commit()
 
     @classmethod
-    def json_orders_user(cls, user_id):
+    def json_orders_user(cls, user_id, data_inicio = None, data_fim = None):
         order_list = []
-        orders = cls.query.filter_by(user_id=user_id).all()
+        if data_inicio and data_fim:
+            orders = cls.query.filter_by(user_id=user_id).filter(cls.order_date.between(data_inicio, data_fim)).all()
+        else:
+            orders = cls.query.filter_by(user_id=user_id).all()
         if orders:
             for order in orders:
                 address = Address.query.filter_by(id=order.address_id).first()

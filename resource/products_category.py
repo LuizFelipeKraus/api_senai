@@ -13,20 +13,6 @@ from flask_jwt_extended import jwt_required
 
 
 class ProductCategoryResource(Resource):
-    """
-    A class used to handle HTTP requests related to ProductCategory resources.
-
-    Methods
-    -------
-    get(category_id, product_id)
-        Returns a ProductCategory instance based on the given category_id and product_id.
-    post(category_id, product_id)
-        Creates a new ProductCategory instance with the given category_id and product_id.
-    put(category_id, product_id)
-        Updates a ProductCategory instance with the given category_id and product_id.
-    delete(category_id, product_id)
-        Deletes a ProductCategory instance based on the given category_id and product_id.
-    """
     argumentos = reqparse.RequestParser()
     argumentos.add_argument('product_id', type = int, required = True, help = "The field 'product_id' cannot be left blanck")
     argumentos.add_argument('category_id', type = int, required = True, help = "The field 'category_id' cannot be left blanck")
@@ -42,7 +28,6 @@ class ProductCategoryResource(Resource):
 
     #@jwt_required()
     def post(self, category_id, product_id):
-        print(product_id)
         if ProductCategory.find_product_category(category_id, product_id):
             return {'message' : f'product-category id {category_id} already exists.'}, 400
 
